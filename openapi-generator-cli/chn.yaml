@@ -1,0 +1,429 @@
+openapi: 3.0.0
+# https://communityhoneynetwork.readthedocs.io/en/v1.7/serverapi/
+info:
+  version: 0.0.1
+  title: CHNv1.7 API
+  description: The CHNv1.7 REST API
+servers:
+  - url: 'https://localhost'
+paths:
+  /api/intel_feed:
+    get:
+      description: Returns honeypot intel data from CHN Server
+      operationId: get_intel_feed
+      security:
+        - AuthorizationApiKeyHeader: []
+      parameters:
+        - name: hours_ago
+          in: query
+          description: Retrieve all elements from x hours ago to current time
+          schema:
+            type: integer
+            default: 4
+          example: 24
+        - name: limit
+          in: query
+          description: Maximum number of elements to retrieve 	
+          schema:
+            type: integer
+            default: 1000
+          example: 100
+        - name: honeypot
+          in: query
+          description: Honeypot name to query for
+          schema:
+            type: string
+          example: cowrie
+        - name: protocol
+          in: query
+          description: Protocol to query for
+          schema:
+            type: string
+          example: ssh
+      responses:
+        '200':
+          description: OK
+          content:
+            plain/text:
+              schema:
+                type: string
+                example:
+                  data:
+                    - count: 134
+                      destination_port: 80
+                      honeypot: dionaea
+                      meta: []
+                      protocol: httpd
+                      source_ip: 127.0.0.1
+                    - count: 70
+                      destination_port: 443
+                      honeypot: dionaea
+                      meta: []
+                      protocol: httpd
+                      source_ip: 127.0.0.1
+                  meta:
+                    options:
+                      hours_ago: '10000'
+                      limit: '1000'
+                    query: intel_feed
+                    size: 2
+      tags:
+        - intel
+  /api/intel_feed.csv:
+    get:
+      description: Returns honeypot intel data from CHN Server as CSV
+      operationId: get_intel_feed_csv
+      security:
+        - AuthorizationApiKeyHeader: []
+      parameters:
+        - name: hours_ago
+          in: query
+          description: Retrieve all elements from x hours ago to current time
+          schema:
+            type: integer
+            default: 4
+          example: 24
+        - name: limit
+          in: query
+          description: Maximum number of elements to retrieve 	
+          schema:
+            type: integer
+            default: 1000
+          example: 100
+        - name: honeypot
+          in: query
+          description: Honeypot name to query for
+          schema:
+            type: string
+          example: cowrie
+        - name: protocol
+          in: query
+          description: Protocol to query for
+          schema:
+            type: string
+          example: ssh
+      responses:
+        '200':
+          description: OK
+          content:
+            plain/text:
+              schema:
+                type: string
+                example:
+                  source_ip   count   tags
+                  172.18.0.1  2   cowrie,ssh,port-2222
+      tags:
+        - intel
+  /api/credentials:
+    get:
+      description: Returns a list of username / password combinations attempted against Cowrie honeypots
+      operationId: get_credentials
+      security:
+        - AuthorizationApiKeyHeader: []
+      parameters:
+        - name: hours_ago
+          in: query
+          description: Retrieve all elements from x hours ago to current time
+          schema:
+            type: integer
+            default: 4
+          example: 24
+        - name: limit
+          in: query
+          description: Maximum number of elements to retrieve 	
+          schema:
+            type: integer
+            default: 1000
+          example: 100
+      responses:
+        '200':
+          description: OK
+          content:
+            plain/text:
+              schema:
+                type: string
+                example:
+                  data:
+                    - count: 5
+                      password: john
+                      username: doe
+                  meta:
+                    options:
+                      hours_ago: '10000'
+                      limit: '1000'
+                    query: attacker_stats
+      tags:
+        - credential
+  /api/credentials.csv:
+    get:
+      description: Returns a list of username / password combinations attempted against Cowrie honeypots as CSV
+      operationId: get_credentials_csv
+      security:
+        - AuthorizationApiKeyHeader: []
+      parameters:
+        - name: hours_ago
+          in: query
+          description: Retrieve all elements from x hours ago to current time
+          schema:
+            type: integer
+            default: 4
+          example: 24
+        - name: limit
+          in: query
+          description: Maximum number of elements to retrieve 	
+          schema:
+            type: integer
+            default: 1000
+          example: 100
+      responses:
+        '200':
+          description: OK
+          content:
+            plain/text:
+              schema:
+                type: string
+                example:
+                  username    password    count
+                  admin   admin   2
+      tags:
+        - credential
+  /api/attacker_stats/{ip}:
+    get:
+      description: Returns detailed attacker statistics by IP address
+      operationId: get_attacker_stats_ip
+      security:
+        - AuthorizationApiKeyHeader: []
+      parameters:
+        - name: ip
+          in: path
+          description: IP Address
+          schema:
+            type: string
+          required: true
+          example: 127.0.0.1
+        - name: hours_ago
+          in: query
+          description: Retrieve all elements from x hours ago to current time
+          schema:
+            type: integer
+            default: 720
+          example: 24
+      responses:
+        '200':
+          description: OK
+          content:
+            plain/text:
+              schema:
+                type: string
+                example:
+                  data:
+                    count: 2
+                    first_seen: '2017-10-12T19:06:53.856000'
+                    honeypots:
+                      - cowrie
+                    last_seen: '2017-10-12T19:07:15.196000'
+                    num_sensors: 1
+                    ports:
+                      - 2222
+                  meta:
+                    options:
+                      hours_ago: '24'
+                    query: attacker_stats
+      tags:
+        - attacker
+  /api/top_attackers:
+    get:
+      description: Returns information regarding top attacking hosts
+      operationId: get_top_attackers
+      security:
+        - AuthorizationApiKeyHeader: []
+      parameters:
+        - name: hours_ago
+          in: query
+          description: Retrieve all elements from x hours ago to current time
+          schema:
+            type: integer
+            default: 4
+          example: 24
+        - name: limit
+          in: query
+          description: Maximum number of elements to retrieve
+          schema:
+            type: integer
+            default: 1000
+          example: 100
+        - name: honeypot
+          in: query
+          description: Honeypot name to query for
+          schema:
+            type: string
+          example: cowrie
+        - name: source_ip
+          in: query
+          description: Source IP to query for
+          schema:
+            type: string
+          example: 172.18.0.1
+      responses:
+        '200':
+          description: OK
+          content:
+            plain/text:
+              schema:
+                type: string
+                example:
+                  data:
+                    - count: 2
+                      honeypot: cowrie
+                      source_ip: 172.18.0.1
+                  meta:
+                    options:
+                      hours_ago: '24'
+                    query: top_attackers
+                    size: 1
+      tags:
+        - attacker
+  /api/feed:
+    get:
+      description: |
+        CAUTION: This request can put heavy load on server / database if run with no parameters. Be sure to run with parameters to limit output
+
+        Returns full feed information for attacks.
+      operationId: get_feed
+      security:
+        - AuthorizationApiKeyHeader: []
+      parameters:
+        - name: hours_ago
+          in: query
+          description: Retrieve all elements from x hours ago to current time
+          schema:
+            type: integer
+          example: 24
+        - name: limit
+          in: query
+          description: Maximum number of elements to retrieve
+          schema:
+            type: integer
+          example: 100
+        - name: channel
+          in: query
+          description: Specific channel to query for
+          schema:
+            type: string
+          example: cowrie.sessions
+      responses:
+        '200':
+          description: OK
+          content:
+            # https://github.com/CommunityHoneyNetwork/CHN-Server/blob/972715c83b78c61106c13b37ffe10d0c94ce1a67/config.py.template
+            # https://github.com/CommunityHoneyNetwork/hpfeeds/blob/2f07ceb9cf5a296cbc3b9d2f8d1442f9ca60eea3/hpfeeds/appsupport/dionaea/hpfeeds.py
+            plain/text:
+              schema:
+                type: string
+      tags:
+        - feed
+  /api/session:
+    get:
+      description: |
+        CAUTION: This request can put heavy load on server / database if run with no parameters. Be sure to run with parameters to limit output
+
+        Returns full session information for attacks.
+      operationId: get_session
+      security:
+        - AuthorizationApiKeyHeader: []
+      parameters:
+        - name: hours_ago
+          in: query
+          description: Retrieve all elements from x hours ago to current time
+          schema:
+            type: integer
+            default: 4
+          example: 24
+        - name: limit
+          in: query
+          description: Maximum number of elements to retrieve 	
+          schema:
+            type: integer
+            default: 1000
+          example: 100
+        - name: honeypot
+          in: query
+          description: Honeypot name to query for
+          schema:
+            type: string
+          example: cowrie
+        - name: protocol
+          in: query
+          description: Protocol to query for
+          schema:
+            type: string
+          example: ssh
+        - name: source_ip
+          in: query
+          description: Source IP address to query for
+          schema:
+            type: string
+          example: 172.18.0.1
+        - name: destination_ip
+          in: query
+          description: Destination IP address to query for
+          schema:
+            type: string
+          example: 172.18.0.2
+        - name: destination_port
+          in: query
+          description: Destination port address to query for
+          schema:
+            type: integer
+          example: 2222
+      responses:
+        '200':
+          description: OK
+          content:
+            plain/text:
+              schema:
+                type: string
+                example:
+                  data:
+                    - _id: 59dfbd50d0c73600080c0c79
+                      destination_ip: null
+                      destination_port: 2222
+                      honeypot: cowrie
+                      identifier: 3ab9eafe-e4ea-4576-a8f6-bb8018e446ed
+                      protocol: ssh
+                      source_ip: 172.18.0.1
+                      source_port: 39858
+                      timestamp: '2017-10-12T19:06:53.856000'
+                    - _id: 59dfbd65d0c73600080c0c7b
+                      destination_ip: null
+                      destination_port: 2222
+                      honeypot: cowrie
+                      identifier: 3ab9eafe-e4ea-4576-a8f6-bb8018e446ed
+                      protocol: ssh
+                      source_ip: 172.18.0.1
+                      source_port: 39864
+                      timestamp: '2017-10-12T19:07:15.196000'
+                  meta:
+                    options: {}
+                    query:
+                      destination_port: '2222'
+                    size: 2
+      tags:
+        - session
+tags:
+  - name: intel
+    description: Intel related operations
+  - name: credential
+    description: Credential related operations
+  - name: attacker
+    description: Attacker related operations
+  - name: feed
+    description: Feed related operations
+  - name: session
+    description: Session related operations
+components:
+  securitySchemes:
+    AuthorizationApiKeyHeader:
+      type: apiKey
+      in: header
+      name: apikey
