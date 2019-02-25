@@ -65,7 +65,7 @@ cd "$apiRoot\openapi-generator-cli\ps"
 ```powershell
 # Add module to current environment
 $env:ChnApiUri = 'https://v1_7.chn.local'
-$env:ChnApiKey = '__YOUR_CIFV3_TOKEN__'
+$env:ChnApiKey = '__YOUR_CHN_TOKEN__'
 Import-Module -Name 'C:\api\chn-sdk-ps\openapi-generator-cli\ps\src\Chn.V1_7.Management'
 
 # Get honeypot intel
